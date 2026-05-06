@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Chat</title>
+    <title>Umair AI Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom scrollbar for a cleaner look */
@@ -74,7 +74,7 @@
                 <button id="toggleSidebarBtn" class="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full md:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
-                <h1 class="text-xl font-medium text-gray-700 tracking-tight">Universal AI</h1>
+                <h1 class="text-xl font-medium text-gray-700 tracking-tight">Umair AI</h1>
             </div>
             <button id="settingsBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full" title="Settings">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -104,7 +104,7 @@
                 </button>
             </div>
             <div class="text-center mt-2">
-                <span class="text-[10px] text-gray-400">AI can make mistakes. Consider verifying important information.</span>
+                <span class="text-[10px] text-gray-400">Umair AI can make mistakes. Consider verifying important information.</span>
             </div>
         </div>
     </main>
@@ -141,9 +141,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- State ---
-            let chats = JSON.parse(localStorage.getItem('universal_ai_chats')) || [];
+            let chats = JSON.parse(localStorage.getItem('umair_ai_chats')) || [];
             let currentChatId = null;
-            let config = JSON.parse(localStorage.getItem('universal_ai_config')) || {
+            let config = JSON.parse(localStorage.getItem('umair_ai_config')) || {
                 apiKey: '',
                 model: 'google/gemini-2.5-pro'
             };
@@ -207,18 +207,29 @@
                     els.settingsModal.querySelector('.bg-white').classList.remove('scale-95');
                 }, 10);
             };
+            
+            // PASSWORD PROTECTION LOGIC
+            els.settingsBtn.addEventListener('click', () => {
+                const password = prompt("Settings kholne ke liye password darj karein:");
+                if (password === "121845") {
+                    openModal();
+                } else if (password !== null) { // User didn't click Cancel
+                    alert("Galat password! Access denied.");
+                }
+            });
+
             const closeModal = () => {
                 els.settingsModal.classList.add('opacity-0');
                 els.settingsModal.querySelector('.bg-white').classList.add('scale-95');
                 setTimeout(() => els.settingsModal.classList.add('hidden'), 200);
             };
-            els.settingsBtn.addEventListener('click', openModal);
+            
             els.closeModalBtn.addEventListener('click', closeModal);
             els.cancelSettingsBtn.addEventListener('click', closeModal);
             els.saveSettingsBtn.addEventListener('click', () => {
                 config.apiKey = els.apiKeyInput.value.trim();
                 config.model = els.modelInput.value.trim() || 'google/gemini-2.5-pro';
-                localStorage.setItem('universal_ai_config', JSON.stringify(config));
+                localStorage.setItem('umair_ai_config', JSON.stringify(config));
                 closeModal();
             });
 
@@ -293,7 +304,13 @@
 
                 if (!config.apiKey) {
                     alert('Please configure your OpenRouter API Key in Settings first.');
-                    openModal();
+                    // Ask for password directly since setting api key requires opening modal
+                    const password = prompt("Settings kholne ke liye password darj karein:");
+                    if (password === "121845") {
+                        openModal();
+                    } else if (password !== null) {
+                        alert("Galat password! Access denied.");
+                    }
                     return;
                 }
 
@@ -337,7 +354,7 @@
                             'Authorization': `Bearer ${config.apiKey}`,
                             'Content-Type': 'application/json',
                             'HTTP-Referer': window.location.href,
-                            'X-Title': 'Universal AI Chat'
+                            'X-Title': 'Umair AI Chat'
                         },
                         body: JSON.stringify({
                             model: config.model,
@@ -382,7 +399,7 @@
                     ? `<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex-shrink-0 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>`
                     : `<div class="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>`;
                 
-                // Extremely basic Markdown handler for bold and code blocks to keep single-file simple
+                // Extremely basic Markdown handler for bold and code blocks
                 let formattedContent = escapeHTML(content)
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-800 text-gray-100 p-3 rounded-md my-2 overflow-x-auto text-sm font-mono"><code>$1</code></pre>')
@@ -391,7 +408,7 @@
                 div.innerHTML = `
                     ${avatar}
                     <div class="flex-1 min-w-0 pt-1">
-                        <div class="font-semibold text-sm text-gray-800 mb-1">${isAI ? 'Universal AI' : 'You'}</div>
+                        <div class="font-semibold text-sm text-gray-800 mb-1">${isAI ? 'Umair AI' : 'You'}</div>
                         <div class="message-content text-gray-700 leading-relaxed">${formattedContent}</div>
                     </div>
                 `;
@@ -418,7 +435,7 @@
             }
 
             function saveChats() {
-                localStorage.setItem('universal_ai_chats', JSON.stringify(chats));
+                localStorage.setItem('umair_ai_chats', JSON.stringify(chats));
             }
 
             function scrollToBottom() {
