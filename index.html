@@ -1,0 +1,29 @@
+async function handleSend() {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if(!text) return;
+
+    // UI Updates
+    appendMsg('user', text);
+    input.value = '';
+    document.getElementById('loader').classList.remove('hidden');
+
+    try {
+        // Ab hum OpenRouter ko nahi, apne Backend ko call kar rahe hain
+        const res = await fetch("http://localhost:3000/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+        });
+        
+        const data = await res.json();
+        document.getElementById('loader').classList.add('hidden');
+        
+        if(data.choices) {
+            streamText(data.choices[0].message.content);
+        }
+    } catch(e) {
+        document.getElementById('loader').classList.add('hidden');
+        appendMsg('ai', "Sir, backend server connect nahi ho raha.");
+    }
+}
