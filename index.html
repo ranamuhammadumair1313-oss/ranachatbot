@@ -3,152 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umair AI - Google Auth</title>
+    <title>Umair AI - Open Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #050505; color: #e5e7eb; }
+        
+        /* Loading Spinner */
         .loader {
             border: 3px solid #1a1a1a;
             border-top: 3px solid #3b82f6;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         .chat-scroll::-webkit-scrollbar { width: 4px; }
         .chat-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- 1. GOOGLE LOGIN SCREEN -->
-    <div id="loginSection" class="fixed inset-0 bg-[#050505] z-[1000] flex items-center justify-center">
-        <div class="text-center p-8 bg-[#111] border border-gray-800 rounded-3xl shadow-2xl max-w-sm w-full">
-            <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            </div>
-            <h2 class="text-2xl font-bold mb-2">Umair AI</h2>
-            <p class="text-gray-500 mb-8 text-sm">Please sign in with Google to continue</p>
-            <button onclick="loginWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white text-black font-semibold py-3 rounded-xl hover:bg-gray-200 transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20">
-                Sign in with Google
-            </button>
-        </div>
-    </div>
-
-    <!-- 2. MAIN APP UI -->
-    <div id="mainApp" class="hidden flex flex-1 overflow-hidden">
+    <!-- MAIN APP UI (No Login Required) -->
+    <div id="mainApp" class="flex flex-1 h-full w-full">
+        
         <!-- Sidebar -->
         <aside class="w-72 bg-[#0a0a0a] border-r border-gray-900 hidden md:flex flex-col">
-            <div class="p-4 border-b border-gray-900 flex items-center gap-3">
-                <img id="userImg" class="w-8 h-8 rounded-full border border-gray-700">
-                <span id="userName" class="text-xs font-medium text-gray-400"></span>
+            <div class="p-6 border-b border-gray-900">
+                <h2 class="text-xl font-bold text-blue-500 tracking-tighter">Umair AI</h2>
             </div>
+            
             <div class="p-4">
-                <button onclick="location.reload()" class="w-full bg-[#111] hover:bg-[#1a1a1a] border border-gray-800 py-2 rounded-xl text-sm transition-all">+ New Chat</button>
-            </div>
-            <div id="history" class="flex-1 overflow-y-auto px-4 space-y-2 text-xs text-gray-500"></div>
-            <div class="p-4 flex flex-col gap-2">
-                <button onclick="openSettings()" class="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    API Settings
+                <button onclick="location.reload()" class="w-full bg-[#111] hover:bg-[#1a1a1a] border border-gray-800 py-3 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                    <span>+</span> New Chat
                 </button>
-                <button onclick="logout()" class="text-red-500 hover:text-red-400 text-sm text-left px-1">Logout</button>
+            </div>
+            
+            <div id="history" class="flex-1 overflow-y-auto px-4 space-y-2 text-xs text-gray-500">
+                <!-- History items will appear here -->
+            </div>
+            
+            <div class="p-4 border-t border-gray-900">
+                <button onclick="openSettings()" class="w-full flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-all p-2 rounded-lg hover:bg-gray-900">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Admin Settings
+                </button>
             </div>
         </aside>
 
         <!-- Chat Area -->
         <main class="flex-1 flex flex-col bg-[#050505] relative">
-            <header class="h-14 flex items-center justify-between px-6 border-b border-gray-900 bg-[#050505]/50 backdrop-blur-xl z-10">
-                <span class="text-blue-500 font-bold tracking-widest text-sm">UMAIR AI</span>
+            <header class="h-16 flex items-center justify-between px-6 border-b border-gray-900 bg-[#050505]/80 backdrop-blur-xl z-10">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-medium text-gray-400 uppercase tracking-widest">System Online</span>
+                </div>
                 <div id="loader" class="hidden"><div class="loader"></div></div>
             </header>
 
-            <div id="chatBox" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 chat-scroll">
-                <div id="welcome" class="h-full flex flex-col items-center justify-center text-center opacity-50">
-                    <h1 class="text-3xl font-light mb-2">Welcome, Sir.</h1>
-                    <p class="text-sm">Main aapki kya madad kar sakta hoon?</p>
+            <div id="chatBox" class="flex-1 overflow-y-auto p-4 md:p-10 space-y-8 chat-scroll">
+                <div id="welcome" class="h-full flex flex-col items-center justify-center text-center">
+                    <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mb-6 border border-blue-600/20">
+                        <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h1 class="text-4xl font-bold mb-3 tracking-tight">Umair AI</h1>
+                    <p class="text-gray-500 max-w-sm">Welcome, Sir. Main aapki kya madad kar sakta hoon? Kuch bhi poochein.</p>
                 </div>
             </div>
 
-            <!-- Input -->
-            <div class="p-4 md:p-8 bg-gradient-to-t from-black to-transparent">
-                <div class="max-w-4xl mx-auto flex items-end gap-2 bg-[#111] border border-gray-800 rounded-3xl p-2 shadow-2xl">
-                    <textarea id="userInput" rows="1" placeholder="Ask me anything..." class="flex-1 bg-transparent border-none outline-none p-3 text-gray-200 resize-none"></textarea>
-                    <button onclick="handleSend()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-2xl transition-all">
+            <!-- Input Box -->
+            <div class="p-4 md:p-10 bg-gradient-to-t from-black via-black to-transparent">
+                <div class="max-w-4xl mx-auto flex items-end gap-3 bg-[#111] border border-gray-800 rounded-[2rem] p-3 shadow-2xl focus-within:border-blue-600/50 transition-all">
+                    <textarea id="userInput" rows="1" placeholder="Type a message..." class="flex-1 bg-transparent border-none outline-none py-3 px-4 text-gray-200 resize-none text-md"></textarea>
+                    <button onclick="handleSend()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition-all shadow-lg shadow-blue-900/20">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
+                <p class="text-[10px] text-center text-gray-600 mt-4 uppercase tracking-[0.2em]">Powered by Umair Automation Specialist</p>
             </div>
         </main>
     </div>
 
-    <!-- 3. SETTINGS MODAL (Password Protected) -->
+    <!-- SETTINGS MODAL (Password Protected) -->
     <div id="settingsModal" class="fixed inset-0 bg-black/95 z-[2000] hidden flex items-center justify-center p-4">
         <div class="bg-[#111] border border-gray-800 p-8 rounded-3xl max-w-md w-full shadow-2xl">
-            <h2 class="text-xl font-bold mb-6">Developer Controls</h2>
-            <div class="space-y-4">
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                Admin Panel
+            </h2>
+            <div class="space-y-5">
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 tracking-widest">OpenRouter API Key</label>
-                    <input type="password" id="apiKey" class="w-full bg-black border border-gray-800 rounded-xl p-3 mt-1 outline-none focus:border-blue-500 text-blue-400">
+                    <label class="text-[10px] uppercase text-gray-500 tracking-widest font-bold">OpenRouter API Key</label>
+                    <input type="password" id="apiKey" placeholder="sk-or-v1-..." class="w-full bg-black border border-gray-800 rounded-xl p-4 mt-2 outline-none focus:border-blue-500 text-blue-400 text-sm">
                 </div>
                 <div>
-                    <label class="text-[10px] uppercase text-gray-500 tracking-widest">Model Engine</label>
-                    <input type="text" id="modelId" value="google/gemini-2.0-flash-001" class="w-full bg-black border border-gray-800 rounded-xl p-3 mt-1 outline-none text-sm">
+                    <label class="text-[10px] uppercase text-gray-500 tracking-widest font-bold">Model ID</label>
+                    <input type="text" id="modelId" placeholder="google/gemini-2.0-flash-001" class="w-full bg-black border border-gray-800 rounded-xl p-4 mt-2 outline-none text-sm text-gray-300">
                 </div>
             </div>
             <div class="mt-8 flex justify-end gap-4">
-                <button onclick="closeSettings()" class="text-gray-500 text-sm">Cancel</button>
-                <button onclick="saveSettings()" class="bg-blue-600 px-6 py-2 rounded-xl font-bold text-sm">Save</button>
+                <button onclick="closeSettings()" class="text-gray-500 text-sm hover:text-white transition-all">Cancel</button>
+                <button onclick="saveSettings()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-bold text-sm transition-all">Save Config</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // Yahan apni Firebase details dalein (Firebase Console -> Project Settings)
-        const firebaseConfig = {
-            apiKey: "AIzaSy...", 
-            authDomain: "your-app.firebaseapp.com",
-            projectId: "your-app",
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const SETTINGS_PASS = "121845";
-
-        // --- AUTH LOGIC ---
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider);
-        }
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('loginSection').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                document.getElementById('userName').innerText = user.displayName;
-                document.getElementById('userImg').src = user.photoURL;
-                loadConfig();
-            } else {
-                document.getElementById('loginSection').classList.remove('hidden');
-                document.getElementById('mainApp').classList.add('hidden');
+        
+        // Load settings on startup
+        window.onload = () => {
+            const saved = JSON.parse(localStorage.getItem('umair_ai_config'));
+            if(saved) {
+                document.getElementById('apiKey').value = saved.key || '';
+                document.getElementById('modelId').value = saved.model || 'google/gemini-2.0-flash-001';
             }
-        });
+        };
 
-        function logout() { auth.signOut(); }
-
-        // --- SETTINGS LOGIC ---
         function openSettings() {
-            const p = prompt("Sir, Admin Password enter karein:");
+            const p = prompt("Enter Admin Password:");
             if(p === SETTINGS_PASS) {
                 document.getElementById('settingsModal').classList.remove('hidden');
             } else if(p !== null) {
-                alert("Access Denied!");
+                alert("Galat Password, Sir!");
             }
         }
 
@@ -157,47 +139,57 @@
         function saveSettings() {
             const config = {
                 key: document.getElementById('apiKey').value,
-                model: document.getElementById('modelId').value
+                model: document.getElementById('modelId').value || 'google/gemini-2.0-flash-001'
             };
             localStorage.setItem('umair_ai_config', JSON.stringify(config));
             closeSettings();
-            alert("Settings Updated, Sir.");
+            alert("Settings Saved!");
         }
 
-        function loadConfig() {
-            const saved = JSON.parse(localStorage.getItem('umair_ai_config'));
-            if(saved) {
-                document.getElementById('apiKey').value = saved.key;
-                document.getElementById('modelId').value = saved.model;
-            }
-        }
-
-        // --- CHAT LOGIC ---
         async function handleSend() {
             const input = document.getElementById('userInput');
             const text = input.value.trim();
             const config = JSON.parse(localStorage.getItem('umair_ai_config'));
 
             if(!text) return;
-            if(!config || !config.key) return alert("Pehle API Settings configure karein.");
+            if(!config || !config.key) {
+                alert("Sir, pehle Admin Settings mein API Key dalein.");
+                return openSettings();
+            }
 
+            // UI Update
             document.getElementById('welcome').style.display = 'none';
             appendMsg('user', text);
             input.value = '';
+            input.style.height = 'auto';
             document.getElementById('loader').classList.remove('hidden');
 
             try {
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${config.key}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ model: config.model, messages: [{role: "user", content: text}] })
+                    headers: { 
+                        "Authorization": `Bearer ${config.key}`, 
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": window.location.href,
+                        "X-Title": "Umair AI"
+                    },
+                    body: JSON.stringify({ 
+                        model: config.model, 
+                        messages: [{role: "user", content: text}] 
+                    })
                 });
+                
                 const data = await res.json();
                 document.getElementById('loader').classList.add('hidden');
-                streamText(data.choices[0].message.content);
+                
+                if(data.choices && data.choices[0]) {
+                    streamText(data.choices[0].message.content);
+                } else {
+                    appendMsg('ai', "Error: Model response nahi de raha. Check Model ID.");
+                }
             } catch(e) {
                 document.getElementById('loader').classList.add('hidden');
-                appendMsg('ai', "Error connecting to server, Sir.");
+                appendMsg('ai', "Connection error. Please check your internet or API key.");
             }
         }
 
@@ -207,25 +199,27 @@
             let current = "";
             for(let line of lines) {
                 current += line + "\n";
-                div.innerHTML = `<div class="bg-[#111] border border-gray-800 p-5 rounded-3xl text-gray-300 leading-relaxed">${current.replace(/\n/g, '<br>')}</div>`;
+                div.innerHTML = `<div class="bg-[#111] border border-gray-800 p-6 rounded-[2rem] text-gray-300 leading-relaxed shadow-xl">${current.replace(/\n/g, '<br>')}</div>`;
                 document.getElementById('chatBox').scrollTop = document.getElementById('chatBox').scrollHeight;
-                await new Promise(r => setTimeout(r, 80));
+                await new Promise(r => setTimeout(r, 60)); // Typing speed
             }
         }
 
         function appendMsg(role, text) {
             const box = document.getElementById('chatBox');
             const wrapper = document.createElement('div');
-            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-pulse-once`;
+            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} fade-in`;
+            
             wrapper.innerHTML = role === 'user' 
-                ? `<div class="bg-blue-600 p-4 rounded-3xl max-w-[80%] text-sm shadow-xl">${text}</div>`
-                : `<div class="bg-[#111] border border-gray-800 p-5 rounded-3xl max-w-[85%] text-sm leading-relaxed">${text}</div>`;
+                ? `<div class="bg-blue-600 p-4 px-6 rounded-[2rem] max-w-[80%] text-sm shadow-lg shadow-blue-900/10">${text}</div>`
+                : `<div class="bg-[#111] border border-gray-800 p-6 rounded-[2rem] max-w-[85%] text-sm leading-relaxed shadow-xl">${text}</div>`;
+            
             box.appendChild(wrapper);
             box.scrollTop = box.scrollHeight;
             return wrapper.firstChild;
         }
 
-        // Textarea Auto-height
+        // Textarea auto-height
         document.getElementById('userInput').addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
